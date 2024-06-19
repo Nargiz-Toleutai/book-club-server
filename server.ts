@@ -37,6 +37,23 @@ app.get("/books", async (req, res) => {
   res.json(books);
 });
 
+app.get("/books/:id", async (req, res) => {
+  const bookId = Number(req.params.id);
+  if (isNaN(bookId)) {
+    res.status(400).send();
+    return;
+  }
+  const book = await prisma.book.findUnique({
+    where: { id: bookId },
+  });
+
+  if (book === null) {
+    res.status(404).send({ message: "Something went wrong!" });
+    return;
+  }
+  res.send(book);
+});
+
 app.post("/login", async (req: AuthRequest, res) => {
   const bodyFromRequest = req.body;
   if ("username" in bodyFromRequest && "password" in bodyFromRequest) {
