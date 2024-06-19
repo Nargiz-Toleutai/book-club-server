@@ -33,6 +33,19 @@ app.get("/books", async (req, res) => {
   }
 });
 
+app.get("/books/popular", async (req, res) => {
+  const books = await prisma.book.findMany({
+    include: {
+      _count: {
+        select: {
+          bookProgress: true,
+        },
+      },
+    },
+  });
+  res.json(books);
+});
+
 app.post("/login", async (req: AuthRequest, res) => {
   const bodyFromRequest = req.body;
   if ("username" in bodyFromRequest && "password" in bodyFromRequest) {
