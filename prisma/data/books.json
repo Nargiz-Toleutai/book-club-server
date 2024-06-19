@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "The Great Adventure",
+    "coverImgUrl": "http://example.com/cover1.jpg",
+    "author": "John Doe",
+    "pageCount": 300
+  },
+  {
+    "id": 2,
+    "title": "Mystery of the Old House",
+    "coverImgUrl": "http://example.com/cover2.jpg",
+    "author": "Jane Smith",
+    "pageCount": 450
+  },
+  {
+    "id": 3,
+    "title": "Journey to the Unknown",
+    "coverImgUrl": "http://example.com/cover3.jpg",
+    "author": "Emily Clark",
+    "pageCount": 200
+  },
+  {
+    "id": 4,
+    "title": "Secrets of the Forest",
+    "coverImgUrl": "http://example.com/cover4.jpg",
+    "author": "Michael Brown",
+    "pageCount": 350
+  },
+  {
+    "id": 5,
+    "title": "Legends of the Ancient World",
+    "coverImgUrl": "http://example.com/cover5.jpg",
+    "author": "Sarah Davis",
+    "pageCount": 500
+  },
+  {
+    "id": 6,
+    "title": "The Hidden Treasure",
+    "coverImgUrl": "http://example.com/cover6.jpg",
+    "author": "James Wilson",
+    "pageCount": 320
+  },
+  {
+    "id": 7,
+    "title": "The Enchanted Castle",
+    "coverImgUrl": "http://example.com/cover7.jpg",
+    "author": "Emma Thompson",
+    "pageCount": 280
+  },
+  {
+    "id": 8,
+    "title": "Chronicles of the Lost City",
+    "coverImgUrl": "http://example.com/cover8.jpg",
+    "author": "David Martinez",
+    "pageCount": 400
+  },
+  {
+    "id": 9,
+    "title": "Voyage to the Moon",
+    "coverImgUrl": "http://example.com/cover9.jpg",
+    "author": "Laura Garcia",
+    "pageCount": 260
+  },
+  {
+    "id": 10,
+    "title": "The Last Frontier",
+    "coverImgUrl": "http://example.com/cover10.jpg",
+    "author": "William Johnson",
+    "pageCount": 370
+  }
+]
