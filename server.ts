@@ -24,7 +24,7 @@ const UserDataValidator = z
   })
   .strict();
 
-app.get("/books/popular", async (req, res) => {
+app.get("/books", async (req, res) => {
   const books = await prisma.book.findMany({
     include: {
       _count: {
