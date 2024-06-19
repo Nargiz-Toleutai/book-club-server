@@ -9,7 +9,7 @@
     "id": 2,
     "bookId": 2,
     "userId": 2,
-    "pageProgress": 200
+    "pageProgress": 20
   },
   {
     "id": 3,
@@ -19,14 +19,26 @@
   },
   {
     "id": 4,
-    "bookId": 4,
+    "bookId": 3,
     "userId": 4,
     "pageProgress": 250
   },
   {
     "id": 5,
-    "bookId": 5,
+    "bookId": 3,
     "userId": 5,
-    "pageProgress": 300
+    "pageProgress": 100
+  },
+  {
+    "id": 6,
+    "bookId": 4,
+    "userId": 5,
+    "pageProgress": 30
+  },
+  {
+    "id": 7,
+    "bookId": 4,
+    "userId": 5,
+    "pageProgress": 10
   }
 ]
