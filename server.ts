@@ -24,15 +24,6 @@ const UserDataValidator = z
   })
   .strict();
 
-app.get("/books", async (req, res) => {
-  try {
-    const allBooks = await prisma.book.findMany();
-    res.send(allBooks);
-  } catch (error) {
-    res.status(500).send({ message: "Something went wrong!" });
-  }
-});
-
 app.get("/books/popular", async (req, res) => {
   const books = await prisma.book.findMany({
     include: {
