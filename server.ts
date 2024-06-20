@@ -2,7 +2,7 @@ import express, { json } from "express";
 import { PrismaClient } from "@prisma/client";
 import cors from "cors";
 import { toToken } from "./auth/jwt";
-import { AuthRequest } from "./auth/middelware";
+import { AuthMiddleware, AuthRequest } from "./auth/middelware";
 import { z } from "zod";
 
 const app = express();
@@ -21,6 +21,14 @@ const UserDataValidator = z
     password: z.string().min(10, {
       message: "Password should have a minimum length of 10 characters",
     }),
+  })
+  .strict();
+
+const ProgressDataValidator = z
+  .object({
+    pageProgress: z.number(),
+    bookId: z.preprocess((val) => Number(val), z.number().int().positive()),
+    userId: z.preprocess((val) => Number(val), z.number().int().positive()),
   })
   .strict();
 
@@ -45,13 +53,112 @@ app.get("/books/:id", async (req, res) => {
   }
   const book = await prisma.book.findUnique({
     where: { id: bookId },
+    include: {
+      bookProgress: true,
+    },
   });
 
   if (book === null) {
     res.status(404).send({ message: "Something went wrong!" });
     return;
   }
-  res.send(book);
+  const bookProgressCount = book.bookProgress.length;
+
+  const averagePageProgress =
+    book.bookProgress.reduce(
+      (acc, progress) => acc + progress.pageProgress,
+      0
+    ) / bookProgressCount;
+  res.json({ ...book, bookProgressCount, averagePageProgress });
+});
+
+app.post("/bookprogress", AuthMiddleware, async (req: AuthRequest, res) => {
+  if (!req.userId) {
+    return res.status(401).send("You are not authorized");
+  }
+  const { bookId, pageProgress } = req.body;
+
+  if (bookId && pageProgress !== undefined) {
+    try {
+      const newBookProgress = await prisma.bookProgress.create({
+        data: {
+          bookId,
+          userId: req.userId,
+          pageProgress,
+        },
+      });
+      res.status(201).send({
+        message: "Book Progress was added!",
+        bookProgress: newBookProgress,
+      });
+    } catch (error) {
+      res.status(500).send({ message: "Something went wrong" });
+    }
+  } else {
+    res.status(400).send({ message: "bookId and pageProgress are required" });
+  }
+});
+
+app.patch(
+  "/bookprogress/:id",
+  AuthMiddleware,
+  async (req: AuthRequest, res) => {
+    if (!req.userId) {
+      return res.status(401).send("You are not authorized");
+    }
+
+    const bookId = Number(req.params.id);
+    const validated = ProgressDataValidator.safeParse({ ...req.body, bookId });
+
+    if (!validated.success) {
+      return res.status(400).send(validated.error.flatten());
+    }
+
+    try {
+      const existingProgress = await prisma.bookProgress.findUnique({
+        where: { id: bookId },
+        include: { book: true },
+      });
+
+      if (!existingProgress || existingProgress.userId !== req.userId) {
+        return res.status(404).send({ message: "You are not authorized" });
+      }
+
+      const { pageProgress } = validated.data;
+      if (pageProgress > existingProgress.book.pageCount) {
+        return res
+          .status(400)
+          .send({ message: "Page progress exceeds book page count" });
+      }
+
+      const updatedBookProgress = await prisma.bookProgress.update({
+        where: { id: bookId },
+        data: { pageProgress },
+      });
+
+      res.send(updatedBookProgress);
+    } catch (error) {
+      console.error("Error updating book progress:", error);
+      res.status(500).send({ message: "Something went wrong" });
+    }
+  }
+);
+
+app.get("/my-progress", AuthMiddleware, async (req: AuthRequest, res) => {
+  if (!req.userId) {
+    return res.status(401).send("You are not authorized");
+  }
+  try {
+    const bookProgressList = await prisma.bookProgress.findMany({
+      where: { userId: req.userId },
+      include: {
+        book: true,
+      },
+    });
+    res.status(200).send(bookProgressList);
+  } catch (error) {
+    res.status(500).send({ message: "Something went wrong" });
+  }
 });
 
 app.post("/login", async (req: AuthRequest, res) => {
