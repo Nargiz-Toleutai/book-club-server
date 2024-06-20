@@ -27,8 +27,7 @@ const UserDataValidator = z
 const ProgressDataValidator = z
   .object({
     pageProgress: z.number(),
-    bookId: z.preprocess((val) => Number(val), z.number().int().positive()),
-    userId: z.preprocess((val) => Number(val), z.number().int().positive()),
+    id: z.preprocess((val) => Number(val), z.number().int().positive()),
   })
   .strict();
 
@@ -107,21 +106,23 @@ app.patch(
       return res.status(401).send("You are not authorized");
     }
 
-    const bookId = Number(req.params.id);
-    const validated = ProgressDataValidator.safeParse({ ...req.body, bookId });
+    const id = Number(req.params.id);
+    const validated = ProgressDataValidator.safeParse({ ...req.body, id });
 
     if (!validated.success) {
       return res.status(400).send(validated.error.flatten());
     }
 
+    const progressId = validated.data.id;
+
     try {
       const existingProgress = await prisma.bookProgress.findUnique({
-        where: { id: bookId },
+        where: { id: progressId },
         include: { book: true },
       });
 
       if (!existingProgress || existingProgress.userId !== req.userId) {
-        return res.status(404).send({ message: "You are not authorized" });
+        return res.status(404).send({ message: "Progress not found" });
       }
 
       const { pageProgress } = validated.data;
@@ -132,7 +133,7 @@ app.patch(
       }
 
       const updatedBookProgress = await prisma.bookProgress.update({
-        where: { id: bookId },
+        where: { id: progressId },
         data: { pageProgress },
       });
 
